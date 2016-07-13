@@ -26,7 +26,7 @@ class ExampleViewController: UIViewController {
     
     class func create() -> ExampleViewController {
         let board = UIStoryboard(name: "Main", bundle: nil)
-        return board.instantiateViewControllerWithIdentifier(String(self)) as! ExampleViewController
+        return board.instantiateViewController(withIdentifier: String(self)) as! ExampleViewController
     }
     
     // MARK: - Lifecycle
@@ -44,7 +44,7 @@ class ExampleViewController: UIViewController {
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         setupSegmentioView()
         setupScrollView()
@@ -82,10 +82,10 @@ class ExampleViewController: UIViewController {
     }
     
     private func segmentioOptions() -> SegmentioOptions {
-        var imageContentMode = UIViewContentMode.Center
+        var imageContentMode = UIViewContentMode.center
         switch segmentioStyle {
         case .ImageBeforeLabel, .ImageAfterLabel:
-            imageContentMode = .ScaleAspectFit
+            imageContentMode = .scaleAspectFit
         default:
             break
         }
@@ -98,7 +98,7 @@ class ExampleViewController: UIViewController {
             horizontalSeparatorOptions: segmentioHorizontalSeparatorOptions(),
             verticalSeparatorOptions: segmentioVerticalSeparatorOptions(),
             imageContentMode: imageContentMode,
-            labelTextAlignment: .Center,
+            labelTextAlignment: .center,
             segmentStates: segmentioStates()
         )
     }
@@ -107,30 +107,30 @@ class ExampleViewController: UIViewController {
         let font = UIFont.exampleAvenirMediumWithSize(13)
         return SegmentioStates(
             defaultState: segmentioState(
-                backgroundColor: UIColor.clearColor(),
+                UIColor.clear(),
                 titleFont: font,
                 titleTextColor: ColorPalette.GrayChateauColor
             ),
             selectedState: segmentioState(
-                backgroundColor: UIColor.clearColor(),
+                UIColor.clear(),
                 titleFont: font,
                 titleTextColor: ColorPalette.BlackColor
             ),
             highlightedState: segmentioState(
-                backgroundColor: ColorPalette.WhiteSmokeColor,
+                ColorPalette.WhiteSmokeColor,
                 titleFont: font,
                 titleTextColor: ColorPalette.GrayChateauColor
             )
         )
     }
     
-    private func segmentioState(backgroundColor backgroundColor: UIColor, titleFont: UIFont, titleTextColor: UIColor) -> SegmentioState {
+    private func segmentioState(_ backgroundColor: UIColor, titleFont: UIFont, titleTextColor: UIColor) -> SegmentioState {
         return SegmentioState(backgroundColor: backgroundColor, titleFont: titleFont, titleTextColor: titleTextColor)
     }
     
     private func segmentioIndicatorOptions() -> SegmentioIndicatorOptions {
         return SegmentioIndicatorOptions(
-            type: .Bottom,
+            type: .bottom,
             ratio: 1,
             height: 5,
             color: ColorPalette.CoralColor
@@ -139,7 +139,7 @@ class ExampleViewController: UIViewController {
     
     private func segmentioHorizontalSeparatorOptions() -> SegmentioHorizontalSeparatorOptions {
         return SegmentioHorizontalSeparatorOptions(
-            type: .TopAndBottom,
+            type: .topAndBottom,
             height: 1,
             color: ColorPalette.WhiteSmokeColor
         )
@@ -192,26 +192,26 @@ class ExampleViewController: UIViewController {
     
     private func setupScrollView() {
         scrollView.contentSize = CGSize(
-            width: UIScreen.mainScreen().bounds.width * CGFloat(viewControllers.count),
+            width: UIScreen.main().bounds.width * CGFloat(viewControllers.count),
             height: containerView.frame.height
         )
         
-        for (index, viewController) in viewControllers.enumerate() {
+        for (index, viewController) in viewControllers.enumerated() {
             viewController.view.frame = CGRect(
-                x: UIScreen.mainScreen().bounds.width * CGFloat(index),
+                x: UIScreen.main().bounds.width * CGFloat(index),
                 y: 0,
                 width: scrollView.frame.width,
                 height: scrollView.frame.height
             )
             addChildViewController(viewController)
             scrollView.addSubview(viewController.view, options: .UseAutoresize) // module's extension
-            viewController.didMoveToParentViewController(self)
+            viewController.didMove(toParentViewController: self)
         }
     }
     
     // MARK: - Actions
     
-    private func goToControllerAtIndex(index: Int) {
+    private func goToControllerAtIndex(_ index: Int) {
         segmentioView.selectedSegmentioIndex = index
     }
     
@@ -219,12 +219,12 @@ class ExampleViewController: UIViewController {
 
 extension ExampleViewController: UIScrollViewDelegate {
     
-    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let currentPage = floor(scrollView.contentOffset.x / scrollView.frame.width)
         segmentioView.selectedSegmentioIndex = Int(currentPage)
     }
     
-    func scrollViewDidScroll(scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: 0)
     }
     

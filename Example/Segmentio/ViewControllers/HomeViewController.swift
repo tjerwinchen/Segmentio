@@ -20,11 +20,11 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
     }
     
-    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: AnyObject?) -> Bool {
         return true
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == String(EmbedContainerViewController.self) {
             containerViewController = segue.destinationViewController as? EmbedContainerViewController
             containerViewController?.style = currentStyle
@@ -33,13 +33,13 @@ class HomeViewController: UIViewController {
     
     // MARK: - Actions
     
-    @IBAction private func showMenu(sender: UIBarButtonItem) {
+    @IBAction private func showMenu(_ sender: UIBarButtonItem) {
         SideMenuViewController.create().showSideMenu(
-            viewController: self,
+            self,
             currentStyle: currentStyle,
             sideMenuDidHide: { [weak self] style in
-                self?.dismissViewControllerAnimated(
-                    false,
+                self?.dismiss(
+                    animated: false,
                     completion: {
                         if self?.currentStyle != style {
                             self?.currentStyle = style

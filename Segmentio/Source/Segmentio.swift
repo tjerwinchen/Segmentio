@@ -57,7 +57,7 @@ public class Segmentio: UIView {
     private var indicatorLayer: CAShapeLayer?
     private var selectedLayer: CAShapeLayer?
     
-    private var cachedOrientation: UIInterfaceOrientation? = UIApplication.sharedApplication().statusBarOrientation {
+    private var cachedOrientation: UIInterfaceOrientation? = UIApplication.shared().statusBarOrientation {
         didSet {
             if cachedOrientation != oldValue {
                 reloadSegmentio()
@@ -68,7 +68,7 @@ public class Segmentio: UIView {
     // MARK: - Lifecycle
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     required public init?(coder aDecoder: NSCoder) {
@@ -83,10 +83,10 @@ public class Segmentio: UIView {
     
     private func commonInit() {
         setupSegmentedCollectionView()
-        NSNotificationCenter.defaultCenter().addObserver(
+        NotificationCenter.default.addObserver(
             self,
             selector: #selector(Segmentio.handleOrientationNotification),
-            name: UIDeviceOrientationDidChangeNotification,
+            name: NSNotification.Name.UIDeviceOrientationDidChange,
             object: nil
         )
     }
@@ -94,7 +94,7 @@ public class Segmentio: UIView {
     private func setupSegmentedCollectionView() {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsetsZero
-        layout.scrollDirection = .Horizontal
+        layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
         
@@ -105,12 +105,12 @@ public class Segmentio: UIView {
         
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.pagingEnabled = false
+        collectionView.isPagingEnabled = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.bounces = true
-        collectionView.scrollEnabled = segmentioOptions.scrollEnabled
-        collectionView.backgroundColor = UIColor.clearColor()
+        collectionView.isScrollEnabled = segmentioOptions.scrollEnabled
+        collectionView.backgroundColor = UIColor.clear()
         
         segmentioCollectionView = collectionView
         
@@ -127,12 +127,12 @@ public class Segmentio: UIView {
             let separatorHeight = horizontalSeparatorOptions.height
             
             switch horizontalSeparatorOptions.type {
-            case .Top:
+            case .top:
                 collectionViewFrameMinY = separatorHeight
                 separatorsHeight = separatorHeight
-            case .Bottom:
+            case .bottom:
                 separatorsHeight = separatorHeight
-            case .TopAndBottom:
+            case .topAndBottom:
                 collectionViewFrameMinY = separatorHeight
                 separatorsHeight = separatorHeight * 2
             }
@@ -149,13 +149,13 @@ public class Segmentio: UIView {
     // MARK: - Handle orientation notification
     
     @objc private func handleOrientationNotification() {
-         cachedOrientation = UIApplication.sharedApplication().statusBarOrientation
+         cachedOrientation = UIApplication.shared().statusBarOrientation
     }
     
     // MARK: - Setups:
     // MARK: Main setup
     
-    public func setup(content content: [SegmentioItem], style: SegmentioStyle, options: SegmentioOptions?) {
+    public func setup(content: [SegmentioItem], style: SegmentioStyle, options: SegmentioOptions?) {
         segmentioItems = content
         segmentioStyle = style
         
@@ -164,11 +164,11 @@ public class Segmentio: UIView {
         
         if let options = options {
             segmentioOptions = options
-            segmentioCollectionView?.scrollEnabled = segmentioOptions.scrollEnabled
+            segmentioCollectionView?.isScrollEnabled = segmentioOptions.scrollEnabled
             backgroundColor = options.backgroundColor
         }
         
-        if segmentioOptions.states.selectedState.backgroundColor != UIColor.clearColor() {
+        if segmentioOptions.states.selectedState.backgroundColor != UIColor.clear() {
             selectedLayer = CAShapeLayer()
             if let selectedLayer = selectedLayer, sublayer = segmentioCollectionView?.layer {
                 setupShapeLayer(
@@ -202,7 +202,7 @@ public class Segmentio: UIView {
     
     // MARK: Collection view setup
     
-    private func setupCellWithStyle(style: SegmentioStyle) {
+    private func setupCellWithStyle(_ style: SegmentioStyle) {
         var cellClass: SegmentioCell.Type {
             switch style {
             case .OnlyLabel:
@@ -220,7 +220,7 @@ public class Segmentio: UIView {
             }
         }
         
-        segmentioCollectionView?.registerClass(
+        segmentioCollectionView?.register(
             cellClass,
             forCellWithReuseIdentifier: segmentioStyle.rawValue
         )
@@ -241,16 +241,16 @@ public class Segmentio: UIView {
         let height = horizontalSeparatorOptions.height
         let type = horizontalSeparatorOptions.type
         
-        if type == .Top || type == .TopAndBottom {
-            topSeparatorView = UIView(frame: CGRectZero)
+        if type == .top || type == .topAndBottom {
+            topSeparatorView = UIView(frame: CGRect.zero)
             setupConstraintsForSeparatorView(
                 separatorView: topSeparatorView,
                 originY: 0
             )
         }
         
-        if type == .Bottom || type == .TopAndBottom {
-            bottomSeparatorView = UIView(frame: CGRectZero)
+        if type == .bottom || type == .topAndBottom {
+            bottomSeparatorView = UIView(frame: CGRect.zero)
             setupConstraintsForSeparatorView(
                 separatorView: bottomSeparatorView,
                 originY: frame.maxY - height
@@ -258,7 +258,7 @@ public class Segmentio: UIView {
         }
     }
     
-    private func setupConstraintsForSeparatorView(separatorView separatorView: UIView?, originY: CGFloat) {
+    private func setupConstraintsForSeparatorView(separatorView: UIView?, originY: CGFloat) {
         guard let horizontalSeparatorOptions = segmentioOptions.horizontalSeparatorOptions, separatorView = separatorView else {
             return
         }
@@ -269,54 +269,54 @@ public class Segmentio: UIView {
         
         let topConstraint = NSLayoutConstraint(
             item: separatorView,
-            attribute: .Top,
-            relatedBy: .Equal,
+            attribute: .top,
+            relatedBy: .equal,
             toItem: superview,
-            attribute: .Top,
+            attribute: .top,
             multiplier: 1,
             constant: originY
         )
-        topConstraint.active = true
+        topConstraint.isActive = true
         
         let leadingConstraint = NSLayoutConstraint(
             item: separatorView,
-            attribute: .Leading,
-            relatedBy: .Equal,
+            attribute: .leading,
+            relatedBy: .equal,
             toItem: self,
-            attribute: .Leading,
+            attribute: .leading,
             multiplier: 1,
             constant: 0
         )
-        leadingConstraint.active = true
+        leadingConstraint.isActive = true
         
         let trailingConstraint = NSLayoutConstraint(
             item: separatorView,
-            attribute: .Trailing,
-            relatedBy: .Equal,
+            attribute: .trailing,
+            relatedBy: .equal,
             toItem: self,
-            attribute: .Trailing,
+            attribute: .trailing,
             multiplier: 1,
             constant: 0
         )
-        trailingConstraint.active = true
+        trailingConstraint.isActive = true
         
         let heightConstraint = NSLayoutConstraint(
             item: separatorView,
-            attribute: .Height,
-            relatedBy: .Equal,
+            attribute: .height,
+            relatedBy: .equal,
             toItem: nil,
-            attribute: .NotAnAttribute,
+            attribute: .notAnAttribute,
             multiplier: 1,
             constant: horizontalSeparatorOptions.height
         )
-        heightConstraint.active = true
+        heightConstraint.isActive = true
     }
     
     // MARK: CAShapeLayers setup
 
-    private func setupShapeLayer(shapeLayer shapeLayer: CAShapeLayer, backgroundColor: UIColor, height: CGFloat, sublayer: CALayer) {
-        shapeLayer.fillColor = backgroundColor.CGColor
-        shapeLayer.strokeColor = backgroundColor.CGColor
+    private func setupShapeLayer(shapeLayer: CAShapeLayer, backgroundColor: UIColor, height: CGFloat, sublayer: CALayer) {
+        shapeLayer.fillColor = backgroundColor.cgColor
+        shapeLayer.strokeColor = backgroundColor.cgColor
         shapeLayer.lineWidth = height
         layer.insertSublayer(shapeLayer, below: sublayer)
     }
@@ -381,20 +381,20 @@ public class Segmentio: UIView {
         
         if context.isLastOrPrelastVisibleCell == true {
             let newIndex = selectedSegmentioIndex + (context.isLastCell ? 0 : 1)
-            let newIndexPath = NSIndexPath(forItem: newIndex, inSection: numberOfSections - 1)
-            segmentioCollectionView?.scrollToItemAtIndexPath(
-                newIndexPath,
-                atScrollPosition: .None,
+            let newIndexPath = IndexPath(item: newIndex, section: numberOfSections - 1)
+            segmentioCollectionView?.scrollToItem(
+                at: newIndexPath,
+                at: UICollectionViewScrollPosition(),
                 animated: true
             )
         }
         
         if context.isFirstOrSecondVisibleCell == true {
             let newIndex = selectedSegmentioIndex - (context.isFirstIndex ? 1 : 0)
-            let newIndexPath = NSIndexPath(forItem: newIndex, inSection: numberOfSections - 1)
-            segmentioCollectionView?.scrollToItemAtIndexPath(
-                newIndexPath,
-                atScrollPosition: .None,
+            let newIndexPath = IndexPath(item: newIndex, section: numberOfSections - 1)
+            segmentioCollectionView?.scrollToItem(
+                at: newIndexPath,
+                at: UICollectionViewScrollPosition(),
                 animated: true
             )
         }
@@ -402,38 +402,38 @@ public class Segmentio: UIView {
     
     // MARK: Move shape layer
     
-    private func moveShapeLayer(shapeLayer: CAShapeLayer, startPoint: CGPoint, endPoint: CGPoint, animated: Bool = false) {
+    private func moveShapeLayer(_ shapeLayer: CAShapeLayer, startPoint: CGPoint, endPoint: CGPoint, animated: Bool = false) {
         var endPointWithVerticalSeparator = endPoint
         let isLastItem = selectedSegmentioIndex + 1 == segmentioItems.count
         endPointWithVerticalSeparator.x = endPoint.x - (isLastItem ? 0 : 1)
         
         let shapeLayerPath = UIBezierPath()
-        shapeLayerPath.moveToPoint(startPoint)
-        shapeLayerPath.addLineToPoint(endPointWithVerticalSeparator)
+        shapeLayerPath.move(to: startPoint)
+        shapeLayerPath.addLine(to: endPointWithVerticalSeparator)
         
         if animated == true {
             isPerformingScrollAnimation = true
-            userInteractionEnabled = false
+            isUserInteractionEnabled = false
             
             CATransaction.begin()
             let animation = CABasicAnimation(keyPath: "path")
             animation.fromValue = shapeLayer.path
-            animation.toValue = shapeLayerPath.CGPath
+            animation.toValue = shapeLayerPath.cgPath
             animation.duration = animationDuration
             CATransaction.setCompletionBlock() {
                 self.isPerformingScrollAnimation = false
-                self.userInteractionEnabled = true
+                self.isUserInteractionEnabled = true
             }
-            shapeLayer.addAnimation(animation, forKey: "path")
+            shapeLayer.add(animation, forKey: "path")
             CATransaction.commit()
         }
         
-        shapeLayer.path = shapeLayerPath.CGPath
+        shapeLayer.path = shapeLayerPath.cgPath
     }
     
     // MARK: - Context for item
     
-    private func contextForItem(item: ItemInSuperview) -> Context {
+    private func contextForItem(_ item: ItemInSuperview) -> Context {
         let cellFrame = item.cellFrameInSuperview
         let cellWidth = cellFrame.width
         let lastCellMinX = floor(item.collectionViewWidth - cellWidth)
@@ -457,10 +457,10 @@ public class Segmentio: UIView {
     
     // MARK: - Item in superview
     
-    private func itemInSuperview(ratio ratio: CGFloat = 1) -> ItemInSuperview {
+    private func itemInSuperview(ratio: CGFloat = 1) -> ItemInSuperview {
         var collectionViewWidth: CGFloat = 0
         var cellWidth: CGFloat = 0
-        var cellRect = CGRectZero
+        var cellRect = CGRect.zero
         var shapeLayerWidth: CGFloat = 0
         
         if let collectionView = segmentioCollectionView {
@@ -497,9 +497,9 @@ public class Segmentio: UIView {
         }
         
         switch indicatorOptions.type {
-        case .Top:
+        case .top:
             indicatorPointY = (indicatorOptions.height / 2)
-        case .Bottom:
+        case .bottom:
             indicatorPointY = frame.height - (indicatorOptions.height / 2)
         }
         
@@ -508,14 +508,14 @@ public class Segmentio: UIView {
         }
         
         let separatorHeight = horizontalSeparatorOptions.height
-        let isIndicatorTop = indicatorOptions.type == .Top
+        let isIndicatorTop = indicatorOptions.type == .top
         
         switch horizontalSeparatorOptions.type {
-        case .Top:
+        case .top:
             indicatorPointY = isIndicatorTop ? indicatorPointY + separatorHeight : indicatorPointY
-        case .Bottom:
+        case .bottom:
             indicatorPointY = isIndicatorTop ? indicatorPointY : indicatorPointY - separatorHeight
-        case .TopAndBottom:
+        case .topAndBottom:
             indicatorPointY = isIndicatorTop ? indicatorPointY + separatorHeight : indicatorPointY - separatorHeight
         }
         
@@ -527,23 +527,23 @@ public class Segmentio: UIView {
 
 extension Segmentio: UICollectionViewDataSource {
     
-    public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return segmentioItems.count ?? 0
     }
     
-    public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(
-            segmentioStyle.rawValue,
-            forIndexPath: indexPath) as! SegmentioCell
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: segmentioStyle.rawValue,
+            for: indexPath) as! SegmentioCell
         
         cell.configure(
-            content: segmentioItems[indexPath.row],
+            segmentioItems[(indexPath as NSIndexPath).row],
             style: segmentioStyle,
             options: segmentioOptions,
-            isLastCell: indexPath.row == segmentioItems.count - 1
+            isLastCell: (indexPath as NSIndexPath).row == segmentioItems.count - 1
         )
         
-        cell.configure(selected: (indexPath.row == selectedSegmentioIndex))
+        cell.configure((indexPath as NSIndexPath).row == selectedSegmentioIndex)
         
         return cell
     }
@@ -554,12 +554,12 @@ extension Segmentio: UICollectionViewDataSource {
 
 extension Segmentio: UICollectionViewDelegate {
     
-    public func collectionView(collectionView: UICollectionView, shouldSelectItemAtIndexPath indexPath: NSIndexPath) -> Bool {
+    public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         return true
     }
     
-    public func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        selectedSegmentioIndex = indexPath.row
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selectedSegmentioIndex = (indexPath as NSIndexPath).row
     }
     
 }
@@ -568,7 +568,7 @@ extension Segmentio: UICollectionViewDelegate {
 
 extension Segmentio: UICollectionViewDelegateFlowLayout {
     
-    public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(
             width: floor(collectionView.frame.width / CGFloat(segmentioOptions.maxVisibleItems)),
             height: collectionView.frame.height
@@ -581,7 +581,7 @@ extension Segmentio: UICollectionViewDelegateFlowLayout {
 
 extension Segmentio: UIScrollViewDelegate {
 
-    public func scrollViewDidScroll(scrollView: UIScrollView) {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if isPerformingScrollAnimation == true {
             return
         }
@@ -590,8 +590,8 @@ extension Segmentio: UIScrollViewDelegate {
             let item = itemInSuperview(ratio: options.ratio)
             moveShapeLayer(
                 indicatorLayer,
-                startPoint: CGPointMake(item.startX, indicatorPointY()),
-                endPoint: CGPointMake(item.endX, indicatorPointY()),
+                startPoint: CGPoint(x: item.startX, y: indicatorPointY()),
+                endPoint: CGPoint(x: item.endX, y: indicatorPointY()),
                 animated: false
             )
         }

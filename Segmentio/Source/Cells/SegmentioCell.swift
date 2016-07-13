@@ -25,14 +25,14 @@ class SegmentioCell: UICollectionViewCell {
     private var style = SegmentioStyle.ImageOverLabel
     private let verticalSeparatorLayer = CAShapeLayer()
     
-    override var highlighted: Bool {
+    override var isHighlighted: Bool {
         get {
-            return super.highlighted
+            return super.isHighlighted
         }
         
         set {
-            if newValue != highlighted {
-                super.highlighted = newValue
+            if newValue != isHighlighted {
+                super.isHighlighted = newValue
                 
                 let highlightedState = options.states.highlightedState
                 let defaultState = options.states.defaultState
@@ -42,11 +42,11 @@ class SegmentioCell: UICollectionViewCell {
                     let highlightedTitleTextColor = cellSelected ? selectedState.titleTextColor : defaultState.titleTextColor
                     let highlightedTitleFont = cellSelected ? selectedState.titleFont : defaultState.titleFont
                     
-                    segmentTitleLabel?.textColor = highlighted ? highlightedState.titleTextColor : highlightedTitleTextColor
-                    segmentTitleLabel?.font = highlighted ? highlightedState.titleFont : highlightedTitleFont
+                    segmentTitleLabel?.textColor = isHighlighted ? highlightedState.titleTextColor : highlightedTitleTextColor
+                    segmentTitleLabel?.font = isHighlighted ? highlightedState.titleFont : highlightedTitleFont
                 }
                 
-                backgroundColor = highlighted ? highlightedState.backgroundColor : defaultState.backgroundColor
+                backgroundColor = isHighlighted ? highlightedState.backgroundColor : defaultState.backgroundColor
             }
         }
     }
@@ -56,12 +56,12 @@ class SegmentioCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        segmentImageView = UIImageView(frame: CGRectZero)
+        segmentImageView = UIImageView(frame: CGRect.zero)
         if let segmentImageView = segmentImageView {
             contentView.addSubview(segmentImageView)
         }
         
-        segmentTitleLabel = UILabel(frame: CGRectZero)
+        segmentTitleLabel = UILabel(frame: CGRect.zero)
         if let segmentTitleLabel = segmentTitleLabel {
             contentView.addSubview(segmentTitleLabel)
         }
@@ -70,7 +70,7 @@ class SegmentioCell: UICollectionViewCell {
         segmentTitleLabel?.translatesAutoresizingMaskIntoConstraints = false
         
         segmentImageView?.layer.masksToBounds = true
-        segmentTitleLabel?.font = UIFont.systemFontOfSize(UIFont.smallSystemFontSize())
+        segmentTitleLabel?.font = UIFont.systemFont(ofSize: UIFont.smallSystemFontSize())
         
         setupConstraintsForSubviews()
         addVerticalSeparator()
@@ -97,13 +97,13 @@ class SegmentioCell: UICollectionViewCell {
     
     // MARK: - Configure
     
-    func configure(content content: SegmentioItem, style: SegmentioStyle, options: SegmentioOptions, isLastCell: Bool) {
+    func configure(_ content: SegmentioItem, style: SegmentioStyle, options: SegmentioOptions, isLastCell: Bool) {
         self.options = options
         self.style = style
-        setupContent(content: content)
+        setupContent(content)
         
         if let indicatorOptions = self.options.indicatorOptions {
-            setupConstraint(indicatorOptions: indicatorOptions)
+            setupConstraint(indicatorOptions)
         }
         
         if let _ = options.verticalSeparatorOptions {
@@ -113,7 +113,7 @@ class SegmentioCell: UICollectionViewCell {
         }
     }
     
-    func configure(selected selected: Bool) {
+    func configure(_ selected: Bool) {
         cellSelected = selected
         
         let selectedState = options.states.selectedState
@@ -131,7 +131,7 @@ class SegmentioCell: UICollectionViewCell {
     
     // MARK: - Private functions
     
-    private func setupContent(content content: SegmentioItem) {
+    private func setupContent(_ content: SegmentioItem) {
         if style.isWithImage() {
             segmentImageView?.contentMode = options.imageContentMode
             segmentImageView?.image = content.image
@@ -146,11 +146,11 @@ class SegmentioCell: UICollectionViewCell {
         }
     }
     
-    private func setupConstraint(indicatorOptions indicatorOptions: SegmentioIndicatorOptions) {
+    private func setupConstraint(_ indicatorOptions: SegmentioIndicatorOptions) {
         switch indicatorOptions.type {
-        case .Top:
+        case .top:
             topConstraint?.constant = padding + indicatorOptions.height
-        case .Bottom:
+        case .bottom:
             bottomConstraint?.constant = padding + indicatorOptions.height
         }
     }
@@ -183,45 +183,45 @@ class SegmentioCell: UICollectionViewCell {
         
         let widthConstraint = NSLayoutConstraint(
             item: verticalSeparatorView,
-            attribute: .Width,
-            relatedBy: .Equal,
+            attribute: .width,
+            relatedBy: .equal,
             toItem: nil,
-            attribute: .NotAnAttribute,
+            attribute: .notAnAttribute,
             multiplier: 1,
             constant: 1
         )
-        widthConstraint.active = true
+        widthConstraint.isActive = true
         
         let trailingConstraint = NSLayoutConstraint(
             item: verticalSeparatorView,
-            attribute: .Trailing,
-            relatedBy: .Equal,
+            attribute: .trailing,
+            relatedBy: .equal,
             toItem: contentView,
-            attribute: .Trailing,
+            attribute: .trailing,
             multiplier: 1,
             constant: 0
         )
-        trailingConstraint.active = true
+        trailingConstraint.isActive = true
         
         let topConstraint = NSLayoutConstraint(
             item: verticalSeparatorView,
-            attribute: .Top, relatedBy: .Equal,
-            toItem: contentView, attribute: .Top,
+            attribute: .top, relatedBy: .equal,
+            toItem: contentView, attribute: .top,
             multiplier: 1,
             constant: 0
         )
-        topConstraint.active = true
+        topConstraint.isActive = true
         
         let bottomConstraint = NSLayoutConstraint(
             item: contentView,
-            attribute: .Bottom,
-            relatedBy: .Equal,
+            attribute: .bottom,
+            relatedBy: .equal,
             toItem: verticalSeparatorView,
-            attribute: .Bottom,
+            attribute: .bottom,
             multiplier: 1,
             constant: 0
         )
-        bottomConstraint.active = true
+        bottomConstraint.isActive = true
     }
     
     private func setupVerticalSeparators() {
@@ -240,13 +240,13 @@ class SegmentioCell: UICollectionViewCell {
         let endY = bounds.height - difference
         
         let path = UIBezierPath()
-        path.moveToPoint(CGPoint(x: verticalSeparatorView.frame.width / 2, y: startY))
-        path.addLineToPoint(CGPoint(x: verticalSeparatorView.frame.width / 2, y: endY))
+        path.move(to: CGPoint(x: verticalSeparatorView.frame.width / 2, y: startY))
+        path.addLine(to: CGPoint(x: verticalSeparatorView.frame.width / 2, y: endY))
         
-        verticalSeparatorLayer.path = path.CGPath
+        verticalSeparatorLayer.path = path.cgPath
         verticalSeparatorLayer.lineWidth = 1
-        verticalSeparatorLayer.strokeColor = verticalSeparatorOptions.color.CGColor
-        verticalSeparatorLayer.fillColor = verticalSeparatorOptions.color.CGColor
+        verticalSeparatorLayer.strokeColor = verticalSeparatorOptions.color.cgColor
+        verticalSeparatorLayer.fillColor = verticalSeparatorOptions.color.cgColor
         
         verticalSeparatorView.layer.addSublayer(verticalSeparatorLayer)
     }
